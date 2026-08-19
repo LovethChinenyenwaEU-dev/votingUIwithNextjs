@@ -1,40 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+AfricaPlan Foundation Election System
 
-## Getting Started
+An upgraded, highly resilient, and zero-dependency local election portal built for handling dynamic voting sessions. Unlike static layouts, this engine transitions candidate data management from predictable selections to unrestricted user inputs while strictly enforcing programmatic boundaries across multi-candidate fields.
 
-First, run the development server:
+Built with Next.js (Pages Router), typed via TypeScript, styled with Tailwind CSS, and fueled by cached state synchronization via TanStack React Query.
 
+Technical Core & Architecture
+
+State Cache Isolation: Utilizes TanStack Query (`useQuery`, `useMutation`) to cache, manage, and process real-time structural layout modifications without relying on external UI components.
+Persistent Hydration Engine: Simulates a low-latency API database layer using client-side `localStorage`. Data persists gracefully across accidental page refreshes without causing Next.js SSR hydration mismatches.
+Dynamic Content Normalization: Automatically processes unstructured candidate inputs (trimming hidden margins and neutralizing case-sensitivity) to prevent duplicate profiles from breaking statistical integrity.
+
+Election Mechanics & Logic Rules
+
+1. The 20-Voter Threshold
+The system initializes an isolated roster array containing exactly 20 predefined slots (`Voter 1` to `Voter 20`). 
+
+2. Single-Ballot Restrictions
+Voters choose their assigned name from a dropdown interface. Once a ballot is cast, their item is instantly marked `hasVoted: true` and structurally **disabled** from the selection array to prevent double-voting.
+
+3. Progressive Reveal Engine
+The View Winners dashboard button remains dynamically locked (`disabled={true}`) through conditional rendering parameters. It activates autonomously *only* when all 20 active slots register as completed.
+
+4. Dynamic Title Splitting & Tie-Breakers
+When triggered, a specialized mathematical reducer computes scores, extracts percentages, and executes automatic tie-breaking algorithms:
+Clear Hierarchy: Highest count receives Head of Cohort; second-highest receives Assistant.
+Primary Tie: If two candidates draw for first place, both are designated Co-Heads of Cohort (Assistant seat remains vacant).
+Secondary Tie: If a single winner is clear but runners-up draw, the candidates are split into Co-Assistants.
+
+Live Deployment
+
+This project is fully built, optimized, and deployed live on Vercel. 
+
+Production Environment: Access the live election portal instantly at (https://voting-u-iwith-nextjs.vercel.app/).
+CI/CD Optimization: Integrated with Vercel's automated build engine, triggering lightweight, ahead-of-time (AOT) static optimization loops on every main branch code push.
+
+Setting Up Locally
+
+Ensure you have [Bun](https://bun.sh) installed on your machine.
+
+1. Install Project Dependencies
+Run the installation profile using the Bun package manager:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the Development Server
+Fire up the Next.js local environment:
+```bash
+bun run dev
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. Open and Evaluate
+Point your browser to [http://localhost:3000](http://localhost:3000) to trace states through the embedded TanStack DevTools drawer.
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+File Tree Mapping
+```text
+├── src/
+│   ├── components/
+│   │   ├── Navbar.tsx        # Branded header housing layout status nodes
+│   │   ├── Footer.tsx        # Standard semantic closure block
+│   │   ├── votingform.tsx    # Dropdown array controllers & normalized entry lines
+│   │   └── resultsModal.tsx  # Dynamic reducer calculating standings and percentages
+│   ├── hooks/
+│   │   └── useVoting.ts      # Main TanStack Query & localStorage synchronization hub
+│   ├── layouts/
+│   │   └── RootLayout.tsx    # Structural application shell wrapper
+│   └── pages/
+│       ├── _app.tsx          # QueryClientProvider wrapper & DevTools initializer
+│       └── index.tsx         # SSR-safe Client Hydration shell with Dynamic Importing
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
